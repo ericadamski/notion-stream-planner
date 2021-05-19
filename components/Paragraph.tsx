@@ -9,6 +9,7 @@ interface Props {
 }
 
 export function Paragraph(props: Props) {
+  // @ts-ignore
   const { paragraph } = props.block;
   const { text } = paragraph;
 

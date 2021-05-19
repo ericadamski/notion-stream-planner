@@ -8,6 +8,7 @@ interface Props {
 }
 
 export function Todo(props: Props) {
+  // @ts-ignore
   const { to_do } = props.block;
   const { checked, text } = to_do;
 
