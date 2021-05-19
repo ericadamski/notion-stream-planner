@@ -22,7 +22,7 @@ export default function Home({ pages }: Props) {
 
   return (
     <>
-      <div style={{ padding: "2rem", backgroundColor: "var(--fg)" }}>
+      <div style={{ padding: "2rem" }}>
         <h1>Streams</h1>
         {live.length > 0 ? (
           <>
@@ -33,7 +33,7 @@ export default function Home({ pages }: Props) {
                   height: "0.5rem",
                   width: "0.5rem",
                   backgroundColor: "red",
-                  marginRight: "0.25rem",
+                  marginRight: "0.5rem",
                 }}
               />{" "}
               Live
@@ -47,6 +47,7 @@ export default function Home({ pages }: Props) {
                 </li>
               ))}
             </ul>
+            <a href="https://twich.tv/ericadamski">Watch now</a>
           </>
         ) : null}
         {upcoming.length > 0 ? (

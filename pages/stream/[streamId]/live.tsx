@@ -9,6 +9,7 @@ import { Paragraph } from "components/Paragraph";
 import { partition } from "ramda";
 import { Spacer } from "components/Spacer";
 import { Tada } from "vectors/Tada";
+import classNames from "classnames";
 
 interface Props {
   streamId?: string;
@@ -112,7 +113,11 @@ export default function Stream({ streamId, content }: Props) {
           marginTop: "2rem",
         }}
       >
-        <progress max={1} value={progress} className="progress-bar" />
+        <progress
+          max={1}
+          value={progress}
+          className={classNames("progress-bar", { done })}
+        />
         <Spacer amount={0.5} />
         <p
           style={{
@@ -146,6 +151,10 @@ export default function Stream({ streamId, content }: Props) {
           background-color: rgba(255, 255, 255, 0.5);
           border-radius: 0.25rem;
           overflow: hidden;
+        }
+
+        .progress-bar.done[value]::-webkit-progress-value {
+          background-color: var(--fg);
         }
 
         .progress-bar[value]::-webkit-progress-value {
