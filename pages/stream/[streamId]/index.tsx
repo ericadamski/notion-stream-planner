@@ -27,12 +27,11 @@ export default function Stream({ streamId, content }: Props) {
   return (
     <div
       style={{
-        background: "rgba(255,255,255,0.95)",
         borderRadius: "1rem",
-        padding: "2rem",
+        padding: "1rem",
+        color: "var(--action-text)",
       }}
     >
-      <h1>What we're doing</h1>
       {data?.map((block) => {
         switch (block.type) {
           case "to_do": {

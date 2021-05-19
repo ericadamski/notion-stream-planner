@@ -20,18 +20,25 @@ export default function Home({ pages }: Props) {
     completeOrLive
   );
 
-  console.log(live, complete, upcoming);
-
   return (
     <>
-      <div
-        style={{ background: "#fff", borderRadius: "2rem", padding: "2rem" }}
-      >
+      <div style={{ padding: "2rem", backgroundColor: "var(--fg)" }}>
         <h1>Streams</h1>
         {live.length > 0 ? (
           <>
-            <h2>Live</h2>
-            <ul>
+            <h2 style={{ display: "flex", alignItems: "center" }}>
+              <span
+                style={{
+                  borderRadius: "50%",
+                  height: "0.5rem",
+                  width: "0.5rem",
+                  backgroundColor: "red",
+                  marginRight: "0.25rem",
+                }}
+              />{" "}
+              Live
+            </h2>
+            <ul style={{ listStyle: "none" }}>
               {live.map((p) => (
                 <li key={p.id}>
                   <Link href={`/stream/${p.id}`}>
