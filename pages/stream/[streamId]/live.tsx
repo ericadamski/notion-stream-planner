@@ -60,7 +60,7 @@ export default function Stream({ streamId, content }: Props) {
     const progress = 1 - remainingTaskCount / todos.length;
 
     return {
-      chunks: [...rest, todos[uncompleteIndex - 1], todos[uncompleteIndex]],
+      chunks: [...rest, todos[uncompleteIndex - 1], todos[uncompleteIndex]].filter(Boolean),
       progress,
       remainingTaskCount,
       done: progress === 1,
