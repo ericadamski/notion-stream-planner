@@ -94,7 +94,7 @@ export default function Home({ pages }: Props) {
     <>
       <div style={{ padding: "2rem" }}>
         <div className="watch-now">
-          <a href="https://twich.tv/ericadamski">
+          <a href="https://twitch.tv/ericadamski">
             {live.length >= 1 ? "Watch now" : "Follow for updates"}
           </a>
         </div>
