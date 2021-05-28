@@ -1,7 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { Block, ToDoBlock } from "@notionhq/client/build/src/api-types";
 import { GetStaticProps, GetStaticPaths } from "next";
 import useSWR from "swr";
+import { AnimatePresence, motion } from "framer-motion";
+import classNames from "classnames";
+import ms from "ms";
 
 import * as Notion from "lib/notion";
 import { Todo } from "components/Todo";
@@ -9,7 +12,7 @@ import { Paragraph } from "components/Paragraph";
 import { partition } from "ramda";
 import { Spacer } from "components/Spacer";
 import { Tada } from "vectors/Tada";
-import classNames from "classnames";
+import { publish } from "lib/ably";
 
 interface Props {
   streamId?: string;
@@ -17,6 +20,12 @@ interface Props {
 }
 
 export default function Stream({ streamId, content }: Props) {
+  // N.B this is probably not the best way of tracing changs.
+  // we could probably use replicache and only read the data from replicache but
+  // use notion to push it.
+  const lastCompletedIndex = useRef<number>();
+  const descriptionTimer = useRef<NodeJS.Timeout>();
+  const [descriptionVisible, setDescriptionVisible] = useState<boolean>(true);
   const { data } = useSWR<Block[]>(
     ["/api/stream/get", streamId],
     (route, pid) =>
@@ -25,12 +34,35 @@ export default function Stream({ streamId, content }: Props) {
         : fetch(`${route}?pid=${pid}`).then((res) => res.json()),
     {
       initialData: content,
-      refreshInterval: 2000,
+      refreshInterval: ms(process.env.NODE_ENV === "production" ? "2s" : "10m"),
     }
   );
 
-  const { chunks, progress, done, remainingTaskCount } = useMemo<{
+  useEffect(() => {
+    if (data != null) {
+      const todos = data.filter(({ type }) => type === "to_do");
+
+      const uncompleteIndex = (todos as ToDoBlock[]).findIndex(
+        // @ts-ignore
+        ({ to_do: { checked } }) => !checked
+      );
+
+      if (lastCompletedIndex.current == null) {
+        // We have not loaded the site yet.
+        lastCompletedIndex.current = uncompleteIndex - 1;
+      }
+
+      if (uncompleteIndex - 1 > lastCompletedIndex.current) {
+        publish("fireworks", { fire: true });
+      }
+
+      lastCompletedIndex.current = uncompleteIndex - 1;
+    }
+  }, [data]);
+
+  const { chunks, todos, progress, done, remainingTaskCount } = useMemo<{
     chunks: Block[];
+    todos: Block[];
     progress: number;
     done: boolean;
     remainingTaskCount: number;
@@ -38,6 +70,7 @@ export default function Stream({ streamId, content }: Props) {
     if (data == null) {
       return {
         chunks: [],
+        todos: [],
         progress: -Infinity,
         done: false,
         remainingTaskCount: -Infinity,
@@ -53,98 +86,154 @@ export default function Stream({ streamId, content }: Props) {
     );
 
     if (todos.length < 1 || uncompleteIndex < 0) {
-      return { chunks: rest, progress: 1, done: true, remainingTaskCount: 0 };
+      return {
+        chunks: rest,
+        todos: [],
+        progress: 1,
+        done: true,
+        remainingTaskCount: 0,
+      };
     }
 
     const remainingTaskCount = todos.slice(uncompleteIndex).length;
     const progress = 1 - remainingTaskCount / todos.length;
 
     return {
-      chunks: [...rest, todos[uncompleteIndex - 1], todos[uncompleteIndex]].filter(Boolean),
+      chunks: rest.filter(Boolean),
+      todos: todos.slice(
+        Math.max(0, uncompleteIndex - 1),
+        uncompleteIndex + Math.max(3, Math.min(remainingTaskCount, 3))
+      ),
       progress,
       remainingTaskCount,
       done: progress === 1,
     };
   }, [data]);
 
+  useEffect(() => {
+    descriptionTimer.current = setTimeout(
+      () => setDescriptionVisible((active) => !active),
+      ms("1m")
+    );
+
+    return () => {
+      // @ts-ignore
+      clearTimeout(descriptionTimer.current);
+    };
+  }, []);
+
   return (
-    <div
-      style={{
-        borderRadius: "1rem",
-        padding: "1rem",
-        color: "var(--action-text)",
-        backgroundColor: "var(--header)",
-        boxShadow: `0 2.8px 2.2px rgba(0, 0, 0, 0.02),
-        0 6.7px 5.3px rgba(0, 0, 0, 0.028),
-        0 12.5px 10px rgba(0, 0, 0, 0.035),
-        0 22.3px 17.9px rgba(0, 0, 0, 0.042),
-        0 41.8px 33.4px rgba(0, 0, 0, 0.05),
-        0 100px 80px rgba(0, 0, 0, 0.07)`,
-      }}
-    >
-      {chunks?.map((block) => {
-        switch (block.type) {
-          case "to_do": {
-            return <Todo block={block} key={block.id} />;
-          }
-          case "paragraph": {
-            return <Paragraph block={block} key={block.id} />;
-          }
-        }
-      })}
-      <div
-        style={{
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {done ? <Tada width="6rem" height="6rem" /> : null}
-      </div>
-      <div
-        className="progress"
-        style={{
-          position: "relative",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: "2rem",
-        }}
-      >
-        <progress
-          max={1}
-          value={progress}
-          className={classNames("progress-bar", { done })}
-        />
-        <Spacer amount={0.5} />
-        <p
-          style={{
-            margin: 0,
-            color: done ? "var(--bg)" : undefined,
-            opacity: 0.8,
-          }}
-        >
-          {done
-            ? "🎉 We've done it!"
-            : `${remainingTaskCount} thing${
-                remainingTaskCount > 1 ? "s" : ""
-              } left to
+    <>
+      <AnimatePresence>
+        {descriptionVisible && (
+          <motion.div
+            layout
+            initial={{ height: 0, paddingTop: "0rem", paddingBottom: "0rem" }}
+            animate={{
+              height: "auto",
+              paddingTop: "1rem",
+              paddingBottom: "1rem",
+            }}
+            exit={{ height: 0, paddingTop: "0rem", paddingBottom: "0rem" }}
+            transition={{ duration: 1 }}
+            style={{
+              overflow: "hidden",
+              paddingLeft: "1rem",
+              paddingRight: "1rem",
+              borderRadius: "1rem",
+              color: "var(--action-text)",
+              backgroundColor: "var(--header)",
+            }}
+            onAnimationComplete={() => {
+              descriptionTimer.current = setTimeout(
+                () => setDescriptionVisible((active) => !active),
+                ms("2m")
+              );
+            }}
+          >
+            {chunks?.map((block) => {
+              switch (block.type) {
+                case "paragraph": {
+                  return <Paragraph block={block} key={block.id} />;
+                }
+              }
+            })}
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {done ? <Tada width="6rem" height="6rem" /> : null}
+            </div>
+            <div
+              className="progress"
+              style={{
+                position: "relative",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: "2rem",
+              }}
+            >
+              <progress
+                max={1}
+                value={progress}
+                className={classNames("progress-bar", { done })}
+              />
+              <Spacer amount={0.5} />
+              <p
+                style={{
+                  margin: 0,
+                  color: done ? "var(--bg)" : undefined,
+                  opacity: 0.8,
+                }}
+              >
+                {done
+                  ? "🎉 We've done it!"
+                  : `${remainingTaskCount} thing${
+                      remainingTaskCount > 1 ? "s" : ""
+                    } left to
           do`}
-        </p>
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <Spacer amount={2} />
+
+      <div className="todo-list">
+        {todos.map((todo, index, list) => (
+          // N.B Active index is 1 so that 0 can be that last completed item and everything > 1
+          // capped at 2 (Our list todos has at most 4 elements) is not active
+          <Todo
+            active={
+              // @ts-ignore
+              (index === 1 && list[0].to_do.checked) ||
+              // @ts-ignore
+              (index === 0 && !todo.to_do.checked)
+            }
+            block={todo as ToDoBlock}
+            position={index}
+            key={todo.id}
+          />
+        ))}
       </div>
+
       <style jsx>{`
         .progress-bar {
           width: 100%;
           appearance: none;
           height: 2.5rem;
-          box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.02),
-            0 6.7px 5.3px rgba(0, 0, 0, 0.028),
-            0 12.5px 10px rgba(0, 0, 0, 0.035),
-            0 22.3px 17.9px rgba(0, 0, 0, 0.042),
-            0 41.8px 33.4px rgba(0, 0, 0, 0.05),
-            0 100px 80px rgba(0, 0, 0, 0.07);
+          box-shadow: 0 0.5px 2.2px rgba(0, 0, 0, 0.02),
+            0 1.3px 5.3px rgba(0, 0, 0, 0.028),
+            0 2.4px 10px rgba(0, 0, 0, 0.035),
+            0 4.2px 17.9px rgba(0, 0, 0, 0.042),
+            0 7.9px 33.4px rgba(0, 0, 0, 0.05), 0 19px 80px rgba(0, 0, 0, 0.07);
         }
 
         .progress-bar[value]::-webkit-progress-bar {
@@ -161,7 +250,7 @@ export default function Stream({ streamId, content }: Props) {
           background-color: var(--action);
         }
       `}</style>
-    </div>
+    </>
   );
 }
 

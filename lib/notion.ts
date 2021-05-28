@@ -2,7 +2,9 @@ import { until } from "@open-draft/until";
 import { Client } from "@notionhq/client";
 import {
   DatePropertyValue,
+  NumberPropertyValue,
   TitlePropertyValue,
+  URLPropertyValue,
 } from "@notionhq/client/build/src/api-types";
 
 let notionClient: Client;
@@ -10,7 +12,13 @@ let notionClient: Client;
 export interface NotionPage {
   id: string;
   title: string;
-  date?: Date | number | string | null;
+  votes: number;
+  date: {
+    start: Date | string | number | null;
+    end: Date | string | number | null;
+  };
+  isComplete: boolean;
+  imageUrl?: string;
 }
 
 export async function listPages() {
@@ -27,6 +35,18 @@ export async function listPages() {
   return pagesResults.results.map(({ id }) => id);
 }
 
+export async function updatePageVotes(pageId: string, votes: number) {
+  return instance().pages.update({
+    page_id: pageId,
+    properties: {
+      // @ts-ignore
+      Votes: {
+        number: votes,
+      },
+    },
+  });
+}
+
 export async function listPagesWithTitle(): Promise<NotionPage[]> {
   const pageIds = await listPages();
 
@@ -38,12 +58,25 @@ export async function listPagesWithTitle(): Promise<NotionPage[]> {
     );
 
     if (pageGetError == null && pageData != null) {
-      const { Name, "Stream date": streamDate } = pageData.properties;
+      const {
+        Name,
+        "Stream date": streamDate,
+        Votes,
+        "Header Image": headerImage,
+      } = pageData.properties;
+
+      const { start, end } = (streamDate as DatePropertyValue)?.date ?? {
+        start: null,
+        end: null,
+      };
 
       pages.push({
         id,
         title: (Name as TitlePropertyValue).title[0].plain_text,
-        date: (streamDate as DatePropertyValue)?.date.start ?? null,
+        date: { start, end: end ?? null },
+        votes: (Votes as NumberPropertyValue)?.number ?? 0,
+        isComplete: end != null,
+        imageUrl: (headerImage as URLPropertyValue)?.url ?? null,
       });
     }
   }

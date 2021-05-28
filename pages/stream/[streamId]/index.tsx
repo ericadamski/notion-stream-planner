@@ -32,10 +32,10 @@ export default function Stream({ streamId, content }: Props) {
         color: "var(--action-text)",
       }}
     >
-      {data?.map((block) => {
+      {data?.map((block, idx) => {
         switch (block.type) {
           case "to_do": {
-            return <Todo block={block} key={block.id} />;
+            return <Todo position={idx} block={block} key={block.id} />;
           }
           case "paragraph": {
             return <Paragraph block={block} key={block.id} />;

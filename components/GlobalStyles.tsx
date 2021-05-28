@@ -10,6 +10,8 @@ export function GlobalStyles() {
         --action: #f9bc60;
         --action-text: #001e1d;
         --extra: #e16162;
+        --black: #272343;
+        --white: #ffffff;
       }
 
       * {
