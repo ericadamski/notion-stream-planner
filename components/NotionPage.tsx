@@ -5,11 +5,13 @@ import { formatDistance } from "date-fns";
 import { motion } from "framer-motion";
 
 import type { NotionPage as NotionPageType } from "lib/notion";
+import type { StreamInfo } from "lib/twitch";
 
 interface Props {
   page: NotionPageType;
   onVoteClick?: () => void;
   voted: boolean;
+  streamInfo?: StreamInfo;
   full?: boolean;
   ignoreVotes?: boolean;
 }
@@ -44,19 +46,22 @@ export function NotionPage(props: Props) {
                   {!props.page.isComplete &&
                     (props.page.date.start != null ? (
                       <p style={{ opacity: 0.8, fontSize: "0.75rem" }}>
-                        live in{" "}
+                        live {props.streamInfo ? "for" : "in"}{" "}
                         {formatDistance(
                           new Date(props.page.date.start),
                           new Date(),
                           { includeSeconds: true }
-                        )}
+                        )}{" "}
+                        {props.streamInfo ? (
+                          <>with {props.streamInfo.viewerCount} watchers</>
+                        ) : null}
                       </p>
                     ) : (
                       <p style={{ opacity: 0.8, fontSize: "0.75rem" }}>
                         Not scheduled
                       </p>
                     ))}
-                  <p>{props.page.title}</p>
+                  <p>{props.streamInfo?.title ?? props.page.title}</p>
                   <p className="small">
                     <span
                       role="img"

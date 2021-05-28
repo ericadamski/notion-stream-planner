@@ -20,6 +20,10 @@ export default function FireworksPage() {
 
       setIsFiring(true);
     });
+
+    subscribe("emojis", (data) => {
+      console.log(data);
+    }); // throttle, RxJS
   }, []);
 
   useEffect(() => {
@@ -71,6 +75,7 @@ export default function FireworksPage() {
         left: 0,
       }}
     />
+    // framer-motion
   );
 }
 

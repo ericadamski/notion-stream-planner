@@ -1,13 +1,19 @@
 import { useState } from "react";
 import { compareDesc, differenceInDays } from "date-fns";
 import { GetServerSideProps } from "next";
-import Link from "next/link";
+import dynamic from "next/dynamic";
 import { partition, sort } from "ramda";
 import useSWR from "swr";
 
 import * as Notion from "lib/notion";
 import { NotionPage } from "components/NotionPage";
 import Image from "next/image";
+import type { StreamInfo } from "lib/twitch";
+
+const Reactions = dynamic(
+  async () => (await import("../components/Reactions")).Reactions,
+  { ssr: false }
+);
 
 interface Props {
   pages: Notion.NotionPage[];
@@ -19,6 +25,12 @@ export default function Home({ pages }: Props) {
     (route) => fetch(route).then((r) => (r.ok ? r.json() : [])),
     { initialData: pages }
   );
+  const { data: streamInfo } = useSWR<StreamInfo>(
+    "/api/twitch/stream-info",
+    (route): Promise<StreamInfo> =>
+      fetch(route).then((r) => (r.ok ? r.json() : {})) as Promise<StreamInfo>
+  );
+
   const [votes, setVotes] = useState<Map<string, number>>(
     new Map<string, number>()
   );
@@ -124,6 +136,7 @@ export default function Home({ pages }: Props) {
                 {live.map((p) => (
                   <li key={p.id}>
                     <NotionPage
+                      streamInfo={streamInfo}
                       full
                       ignoreVotes
                       page={p}
@@ -146,6 +159,7 @@ export default function Home({ pages }: Props) {
               <Image width={550} height={500} src="/images/sleeping_cat.gif" />
             </div>
           )}
+          <Reactions />
         </div>
         <div style={{ height: "2rem" }} />
         <div className="streams-container">
