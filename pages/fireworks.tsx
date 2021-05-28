@@ -2,18 +2,17 @@ import { useState, useEffect, useRef } from "react";
 import ReactCanvasConfetti from "react-canvas-confetti";
 import { CreateTypes } from "canvas-confetti";
 import { motion } from "framer-motion";
-// @ts-ignore
-import { EmojiProvider, Emoji } from "react-apple-emojis";
-import emojiData from "react-apple-emojis/lib/data.json";
 
 import { subscribe } from "lib/ably";
+import { useWindowSize } from "hooks/useWindowSize";
 
 interface Reaction {
   emoji: string;
   id: string;
 }
 
-const MAX_EMOJI_RENDER = Array.from({ length: 60 });
+const MAX_EMOJIS = 20;
+const MAX_EMOJI_RENDER = Array.from({ length: MAX_EMOJIS });
 
 export default function FireworksPage() {
   const confettiCanvas = useRef<CreateTypes | null>();
@@ -21,6 +20,7 @@ export default function FireworksPage() {
   const fireworkIntervalTimer = useRef<number | NodeJS.Timer>();
   const [isFiring, setIsFiring] = useState<boolean>(false);
   const [emojis, setEmojis] = useState<Reaction[]>([]);
+  const windowSize = useWindowSize();
 
   useEffect(() => {
     subscribe("fireworks", () => {
@@ -38,13 +38,11 @@ export default function FireworksPage() {
         const { emoji } = JSON.parse(data);
 
         setEmojis((current) => {
-          const copy = current.slice(-60);
-          copy.push({
+          const copy = current.slice(-MAX_EMOJIS);
+          copy.unshift({
             emoji,
             id,
           });
-
-          console.log({ copy });
 
           return copy;
         });
@@ -105,24 +103,27 @@ export default function FireworksPage() {
         }}
       />
       <div style={{ height: "100vh" }}>
-        <EmojiProvider data={emojiData}>
-          {MAX_EMOJI_RENDER.map((_, idx) => {
-            const reaction = emojis[idx] ?? {};
+        {MAX_EMOJI_RENDER.map((_, idx) => {
+          const reaction = emojis[idx] ?? {};
+          const randomEndX = Math.random() * (windowSize?.width ?? 0) + 100;
 
-            return (
-              <motion.div
-                key={idx}
-                animate={{ x: 100, y: "0%" }}
-                style={{ y: "100%" }}
-                transition={{ duration: 3 }}
-              >
-                {reaction.emoji && (
-                  <Emoji key={reaction.id} name={reaction.emoji} />
-                )}
-              </motion.div>
-            );
-          })}
-        </EmojiProvider>
+          return (
+            <motion.div
+              key={reaction.id}
+              animate={{ x: -randomEndX, y: "-100vh" }}
+              style={{
+                position: "absolute",
+                bottom: 0,
+                right: 150,
+              }}
+              transition={{ duration: Math.random() }}
+            >
+              <span role="img" style={{ fontSize: "6rem" }}>
+                {reaction.emoji}
+              </span>
+            </motion.div>
+          );
+        })}
       </div>
     </>
   );

@@ -1,21 +1,11 @@
 import React, { MouseEvent, useState, useRef, useEffect } from "react";
 import Picker, { IEmojiData } from "emoji-picker-react";
-// @ts-ignore
-import { EmojiProvider, Emoji } from "react-apple-emojis";
-import emojiData from "react-apple-emojis/lib/data.json";
 import { motion } from "framer-motion";
 
 import { useOnClickOutside } from "hooks/useOnClickOutside";
 import { publish } from "lib/ably";
 
-const DEFAULT_EMOJIS = [
-  "rocket",
-  "rolling-on-the-floor-laughing",
-  "star-struck",
-  "partying-face",
-  "pile-of-poo",
-  "hundred-points",
-];
+const DEFAULT_EMOJIS = ["🚀", "🤣", "🤩", "🥳", "💩", "💯"];
 
 const EMOJI_LS_KEY = "customEmojiReactions";
 
@@ -47,75 +37,69 @@ export function Reactions() {
 
   return (
     <>
-      <EmojiProvider data={emojiData}>
-        <div className="reactions">
-          <ul className="reactions__emoji-list">
-            <li style={{ position: "relative" }} ref={emojiPickerRef}>
-              {pickingCustomEmoji && (
-                <Picker
-                  native
-                  pickerStyle={{ position: "absolute", zIndex: "100" }}
-                  onEmojiClick={(_event: MouseEvent, emoji: IEmojiData) => {
-                    const e = emoji.names[0].replace(/\W/g, "-");
+      <div className="reactions">
+        <ul className="reactions__emoji-list">
+          <li style={{ position: "relative" }} ref={emojiPickerRef}>
+            {pickingCustomEmoji && (
+              <Picker
+                native
+                pickerStyle={{ position: "absolute", zIndex: "100" }}
+                onEmojiClick={(_event: MouseEvent, { emoji }: IEmojiData) => {
+                  handleEmojiClick(emoji);
 
-                    handleEmojiClick(e);
+                  setEmojis((current) => {
+                    const copy = current.slice(-DEFAULT_EMOJIS.length);
+                    copy.push(emoji);
 
-                    setEmojis((current) => {
-                      const copy = current.slice(-DEFAULT_EMOJIS.length);
-                      copy.push(e);
+                    return Array.from(new Set(copy));
+                  });
 
-                      return Array.from(new Set(copy));
-                    });
-
-                    setPickingCustomEmoji(false);
+                  setPickingCustomEmoji(false);
+                }}
+              />
+            )}
+            <button
+              className="emoji-list__button"
+              onClick={() => setPickingCustomEmoji(true)}
+            >
+              custom
+            </button>
+          </li>
+          {emojis.map((emoji) => {
+            return (
+              <li key={emoji}>
+                <motion.button
+                  style={{
+                    appearance: "none",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "transparent",
+                    border: "none",
+                    width: "5rem",
+                    height: "5rem",
                   }}
-                />
-              )}
-              <button
-                className="emoji-list__button"
-                onClick={() => setPickingCustomEmoji(true)}
-              >
-                custom
-              </button>
-            </li>
-            {emojis.map((emoji) => {
-              return (
-                <li key={emoji}>
-                  <motion.button
-                    style={{
-                      appearance: "none",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      backgroundColor: "transparent",
-                      border: "none",
-                      width: "5rem",
-                      height: "5rem",
-                    }}
-                    onClick={() => handleEmojiClick(emoji)}
-                    whileTap={{
-                      scale: 0.8,
-                    }}
-                    whileHover={{
-                      scale: [1.1, 0.9, 1.1],
-                      transition: { repeat: Infinity },
-                    }}
+                  onClick={() => handleEmojiClick(emoji)}
+                  whileTap={{
+                    scale: 0.8,
+                  }}
+                  whileHover={{
+                    scale: [1.1, 0.9, 1.1],
+                    transition: { repeat: Infinity },
+                  }}
+                >
+                  <span
+                    role="img"
+                    style={{ userSelect: "none", fontSize: "4rem" }}
                   >
-                    <Emoji
-                      style={{
-                        width: "4rem",
-                        height: "4rem",
-                        pointerEvents: "none",
-                      }}
-                      name={emoji}
-                    />
-                  </motion.button>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      </EmojiProvider>
+                    {emoji}
+                  </span>
+                </motion.button>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
       <style jsx>{`
         .reactions {
           padding-top: 2rem;
