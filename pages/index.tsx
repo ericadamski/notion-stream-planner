@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { compareDesc, differenceInDays } from "date-fns";
 import { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
@@ -9,6 +9,9 @@ import * as Notion from "lib/notion";
 import { NotionPage } from "components/NotionPage";
 import Image from "next/image";
 import type { StreamInfo } from "lib/twitch";
+import { PointBar } from "components/PointBar";
+import { PointContext } from "context/Points";
+import { PointSystem } from "lib/points";
 
 const Reactions = dynamic(
   async () => (await import("../components/Reactions")).Reactions,
@@ -20,6 +23,7 @@ interface Props {
 }
 
 export default function Home({ pages }: Props) {
+  const { instance } = useContext(PointContext);
   const { data, mutate } = useSWR<Notion.NotionPage[]>(
     "/api/notion/list-pages",
     (route) => fetch(route).then((r) => (r.ok ? r.json() : [])),
@@ -41,7 +45,8 @@ export default function Home({ pages }: Props) {
   const [live, complete] = partition(
     ({ date, isComplete }) =>
       date?.start != null
-        ? differenceInDays(new Date(date.start), new Date()) === 0
+        ? differenceInDays(new Date(date.start), new Date()) === 0 &&
+          !isComplete
         : Boolean(isComplete),
     completeOrLive
   );
@@ -56,6 +61,7 @@ export default function Home({ pages }: Props) {
   }, upcoming.concat(complete));
 
   const handleLocalPageVoteUpdate = (pageId: string, votes: number) => {
+    instance?.addPoints(PointSystem.VOTE);
     return mutate((currentPages) => {
       if (currentPages == null) return currentPages;
 
@@ -106,7 +112,12 @@ export default function Home({ pages }: Props) {
     <>
       <div style={{ padding: "2rem" }}>
         <div className="watch-now">
-          <a href="https://twitch.tv/ericadamski">
+          <PointBar />
+          <div style={{ width: "1rem" }} />
+          <a
+            href="https://twitch.tv/ericadamski"
+            onClick={() => instance?.addPoints(PointSystem.WATCH_LIVE)}
+          >
             {live.length >= 1 ? "Watch now" : "Follow for updates"}
           </a>
         </div>
@@ -159,7 +170,7 @@ export default function Home({ pages }: Props) {
               <Image width={550} height={500} src="/images/sleeping_cat.gif" />
             </div>
           )}
-          <Reactions />
+          {live.length > 0 && <Reactions />}
         </div>
         <div style={{ height: "2rem" }} />
         <div className="streams-container">
@@ -225,16 +236,18 @@ export default function Home({ pages }: Props) {
 
         .watch-now {
           display: flex;
+          align-items: center;
           width: 100%;
           position: sticky;
           top: 1rem;
           z-index: 100;
           background-color: rgba(255, 255, 255, 0.7);
           backdrop-filter: blur(2px);
-          box-shadow: 0.25rem 0.325rem 0 0.0125rem var(--black);
+          border-radius: 0.25rem;
         }
 
         .watch-now a {
+          box-shadow: 0.25rem 0.325rem 0 0.0125rem var(--black);
           width: 100%;
           padding: 1rem;
           border: 4px solid var(--black);

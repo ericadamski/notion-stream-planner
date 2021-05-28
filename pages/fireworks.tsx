@@ -116,7 +116,7 @@ export default function FireworksPage() {
                 bottom: 0,
                 right: 150,
               }}
-              transition={{ duration: Math.random() }}
+              transition={{ duration: Math.random() + 0.5 }}
             >
               <span role="img" style={{ fontSize: "6rem" }}>
                 {reaction.emoji}

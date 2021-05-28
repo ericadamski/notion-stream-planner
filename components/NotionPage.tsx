@@ -1,4 +1,4 @@
-import React, { MouseEvent } from "react";
+import React, { MouseEvent, useContext } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDistance } from "date-fns";
@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 
 import type { NotionPage as NotionPageType } from "lib/notion";
 import type { StreamInfo } from "lib/twitch";
+import { PointSystem } from "lib/points";
+import { PointContext } from "context/Points";
 
 interface Props {
   page: NotionPageType;
@@ -17,6 +19,7 @@ interface Props {
 }
 
 export function NotionPage(props: Props) {
+  const { instance } = useContext(PointContext);
   const handleClick = (e: MouseEvent) => {
     e.preventDefault();
     if (props.onVoteClick != null) props.onVoteClick();
@@ -25,7 +28,11 @@ export function NotionPage(props: Props) {
   return (
     <>
       <Link href={`/stream/${props.page.id}`}>
-        <motion.div whileHover="hovering" initial="initial">
+        <motion.div
+          whileHover="hovering"
+          initial="initial"
+          onClick={() => instance?.addPoints(PointSystem.VIEW_DETAILS_CLICK)}
+        >
           <a
             style={{
               display: "flex",

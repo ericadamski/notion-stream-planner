@@ -116,6 +116,11 @@ export async function getStreamInfo(
   }
 
   const [streamInfo] = responseData.data;
+
+  if (streamInfo == null) {
+    return undefined;
+  }
+
   const startedAt = new Date(streamInfo.started_at);
 
   return {

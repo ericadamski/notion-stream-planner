@@ -2,8 +2,15 @@ import { AppProps } from "next/dist/next-server/lib/router/router";
 import Head from "next/head";
 
 import { GlobalStyles } from "components/GlobalStyles";
+import { PointContext } from "context/Points";
+import { PointSystem } from "lib/points";
+import { useEffect, useState } from "react";
 
 export default function MyApp({ pageProps, Component }: AppProps) {
+  const [pointSystemInstance, setPointSystemInstance] = useState<PointSystem>(
+    new PointSystem()
+  );
+
   return (
     <>
       <Head>
@@ -50,7 +57,9 @@ export default function MyApp({ pageProps, Component }: AppProps) {
           }}
         />
       </Head>
-      <Component {...pageProps} />
+      <PointContext.Provider value={{ instance: pointSystemInstance }}>
+        <Component {...pageProps} />
+      </PointContext.Provider>
       <GlobalStyles />
     </>
   );

@@ -1,9 +1,17 @@
-import React, { MouseEvent, useState, useRef, useEffect } from "react";
+import React, {
+  MouseEvent,
+  useState,
+  useRef,
+  useEffect,
+  useContext,
+} from "react";
 import Picker, { IEmojiData } from "emoji-picker-react";
 import { motion } from "framer-motion";
 
 import { useOnClickOutside } from "hooks/useOnClickOutside";
 import { publish } from "lib/ably";
+import { PointSystem } from "lib/points";
+import { PointContext } from "context/Points";
 
 const DEFAULT_EMOJIS = ["🚀", "🤣", "🤩", "🥳", "💩", "💯"];
 
@@ -18,6 +26,7 @@ function getCustomEmojiList() {
 }
 
 export function Reactions() {
+  const { instance } = useContext(PointContext);
   const emojiPickerRef = useRef<HTMLLIElement>(null);
   const [emojis, setEmojis] = useState<string[]>(
     getCustomEmojiList() ?? DEFAULT_EMOJIS
@@ -26,6 +35,7 @@ export function Reactions() {
   useOnClickOutside(emojiPickerRef, () => setPickingCustomEmoji(false));
 
   const handleEmojiClick = (emoji: string) => {
+    instance?.addPoints(PointSystem.REACTION_CLICK);
     publish("emoji", { emoji });
   };
 
