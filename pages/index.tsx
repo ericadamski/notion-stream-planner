@@ -1,9 +1,10 @@
-import { useContext, useState } from "react";
-import { compareDesc, differenceInDays } from "date-fns";
-import { GetServerSideProps } from "next";
+import { useContext, useState, useMemo } from "react";
+import { compareDesc, formatDistance, isAfter } from "date-fns";
+import { GetStaticProps } from "next";
 import dynamic from "next/dynamic";
 import { partition, sort } from "ramda";
 import useSWR from "swr";
+import { createEvent } from "ics";
 
 import * as Notion from "lib/notion";
 import { NotionPage } from "components/NotionPage";
@@ -12,6 +13,7 @@ import type { StreamInfo } from "lib/twitch";
 import { PointBar } from "components/PointBar";
 import { PointContext } from "context/Points";
 import { PointSystem } from "lib/points";
+import { Button } from "components/Button";
 
 const Reactions = dynamic(
   async () => (await import("../components/Reactions")).Reactions,
@@ -34,31 +36,37 @@ export default function Home({ pages }: Props) {
     (route): Promise<StreamInfo> =>
       fetch(route).then((r) => (r.ok ? r.json() : {})) as Promise<StreamInfo>
   );
-
   const [votes, setVotes] = useState<Map<string, number>>(
     new Map<string, number>()
   );
-  const [completeOrLive, upcoming] = partition(
-    ({ date }) => Boolean(date?.start),
-    data || []
+  const [completeOrLive, upcoming] = useMemo(
+    () => partition(({ date }) => Boolean(date?.start), data || []),
+    [data]
   );
-  const [live, complete] = partition(
-    ({ date, isComplete }) =>
-      date?.start != null
-        ? differenceInDays(new Date(date.start), new Date()) === 0 &&
-          !isComplete
-        : Boolean(isComplete),
-    completeOrLive
+  const [live, complete] = useMemo(
+    () =>
+      partition(
+        ({ date, isComplete }) =>
+          date?.start != null
+            ? isAfter(new Date(), new Date(date.start)) && !isComplete
+            : Boolean(isComplete),
+        completeOrLive
+      ),
+    [completeOrLive]
   );
-  const sortedUpcoming = sort((page1, page2) => {
-    const compareDates = compareDesc(
-      new Date(page1.date.start ?? 0),
-      new Date(page2.date.start ?? 0)
-    );
-    const compareVotes = page1.votes < page2.votes ? 1 : -1;
+  const sortedUpcoming = useMemo(
+    () =>
+      sort((page1, page2) => {
+        const compareDates = compareDesc(
+          new Date(page1.date.start ?? 0),
+          new Date(page2.date.start ?? 0)
+        );
+        const compareVotes = page1.votes < page2.votes ? 1 : -1;
 
-    return compareDates || compareVotes;
-  }, upcoming.concat(complete));
+        return compareDates || compareVotes;
+      }, upcoming.concat(complete)),
+    [upcoming, complete]
+  );
 
   const handleLocalPageVoteUpdate = (pageId: string, votes: number) => {
     instance?.addPoints(PointSystem.VOTE);
@@ -108,9 +116,43 @@ export default function Home({ pages }: Props) {
     });
   };
 
+  const nextStream = useMemo(() => {
+    return sortedUpcoming.find(
+      ({ isComplete, date }) => !isComplete && date.start != null
+    );
+  }, [sortedUpcoming]);
+  const nextEventCalLink = useMemo(() => {
+    if (nextStream != null) {
+      const { start } = nextStream.date;
+      const startTime = new Date(start!);
+
+      const { value } = createEvent({
+        start: [
+          startTime.getFullYear(),
+          startTime.getMonth() + 1,
+          startTime.getDate(),
+          startTime.getHours(),
+          startTime.getMinutes(),
+        ],
+        startInputType: "local",
+        duration: { hours: 1 },
+        title: "Eric's streaming!",
+        description: `Come watch me hack, build, chat or play some games. Check out what we will be doing in this stream here: https://streams.ericadamski.dev/stream/${nextStream.id}`,
+        url: "https://twitch.tv/ericadamski",
+        status: "CONFIRMED",
+        organizer: { name: "Eric", email: "er.adamski@gmail.com" },
+      });
+
+      if (value != null) {
+        return `data:text/calendar;charset=utf8,${encodeURIComponent(value)}`;
+      }
+    }
+  }, [nextStream]);
+
   return (
     <>
       <div style={{ padding: "2rem" }}>
+        {/* <div className="header"> */}
         <div className="watch-now">
           <PointBar />
           <div style={{ width: "1rem" }} />
@@ -121,6 +163,22 @@ export default function Home({ pages }: Props) {
             {live.length >= 1 ? "Watch now" : "Follow for updates"}
           </a>
         </div>
+        {/* <div>
+            <p
+              style={{
+                margin: 0,
+                marginTop: "0.75rem",
+                background: "var(--action)",
+                width: 250,
+                padding: "0.5rem",
+                borderRadius: "0.25rem",
+                textAlign: "center",
+              }}
+            >
+              Get points by clicking stuff!
+            </p>
+          </div> */}
+        {/* </div> */}
         <div style={{ height: "2rem" }} />
         <div className="streams-container">
           <h2
@@ -170,7 +228,48 @@ export default function Home({ pages }: Props) {
               <Image width={550} height={500} src="/images/sleeping_cat.gif" />
             </div>
           )}
-          {live.length > 0 && <Reactions />}
+          {nextStream && (
+            <>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "1.25rem",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                }}
+              >
+                I'm streaming in{" "}
+                <span style={{ textDecoration: "underline" }}>
+                  {formatDistance(
+                    new Date(nextStream.date.start!),
+                    new Date(),
+                    {
+                      includeSeconds: true,
+                    }
+                  ).toUpperCase()}
+                </span>{" "}
+                put that sh*t in your calendar so you don't miss it!
+              </p>
+              <div style={{ height: "2rem" }} />
+              {nextEventCalLink != null && (
+                <a href={nextEventCalLink}>
+                  <Button style={{ width: "100%" }} emoji="📅">
+                    <span style={{ marginRight: "0.5rem" }}>📅</span> Add to my
+                    calendar
+                  </Button>
+                </a>
+              )}
+              <div style={{ height: "2rem" }} />
+              <NotionPage
+                full
+                ignoreVotes
+                page={nextStream}
+                onVoteClick={handlePageVote(nextStream.id, nextStream.votes)}
+                voted={votes.has(nextStream.id)}
+              />
+            </>
+          )}
+          {live.length > 0 && streamInfo != null && <Reactions />}
         </div>
         <div style={{ height: "2rem" }} />
         <div className="streams-container">
@@ -265,11 +364,12 @@ export default function Home({ pages }: Props) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps<
+export const getStaticProps: GetStaticProps<
   Record<string, any>,
   Props & Record<string, any>
-> = async function getServerSideProps() {
+> = async function getStaticProps() {
   return {
     props: { pages: await Notion.listPagesWithTitle() },
+    revalidate: 10,
   };
 };
