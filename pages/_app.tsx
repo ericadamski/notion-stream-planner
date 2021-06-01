@@ -56,44 +56,42 @@ export default function MyApp({ pageProps, Component }: AppProps) {
         `,
           }}
         />
-        <Head>
-          <meta charSet="utf-8" />
-          <title>Eric's live streams</title>
-          <meta
-            key="viewport"
-            name="viewport"
-            content="initial-scale=1.0, width=device-width"
-          />
-          <meta key="theme-color" name="theme-color" content="#EF5DA8" />
-          <meta name="twitter:site" key="twitter:site" content="@zealigan" />
-          <meta
-            name="twitter:card"
-            key="twitter:card"
-            content="summary_large_image"
-          />
-          <meta name="og:title" key="og:title" content="Eric's live streams" />
-          <link key="favicon" rel="shortcut icon" href="/images/favicon.png" />
-          <meta
-            name="og:url"
-            key="og:url"
-            content="https://streams.ericadamski.dev"
-          />
-          <meta
-            name="description"
-            key="description"
-            content="See all of Eric's past, present, and future streams! Interact with live streams and vote on content you want to see!"
-          />
-          <meta
-            name="og:description"
-            key="og:description"
-            content="See all of Eric's past, present, and future streams! Interact with live streams and vote on content you want to see!"
-          />
-          <meta
-            name="og:image"
-            key="og:image"
-            content="https://streams.ericadamski.dev/images/social.png"
-          />
-        </Head>
+        <meta charSet="utf-8" />
+        <title>Eric's live streams</title>
+        <meta
+          key="viewport"
+          name="viewport"
+          content="initial-scale=1.0, width=device-width"
+        />
+        <meta key="theme-color" name="theme-color" content="#EF5DA8" />
+        <meta name="twitter:site" key="twitter:site" content="@zealigan" />
+        <meta
+          name="twitter:card"
+          key="twitter:card"
+          content="summary_large_image"
+        />
+        <meta name="og:title" key="og:title" content="Eric's live streams" />
+        <link key="favicon" rel="shortcut icon" href="/images/favicon.png" />
+        <meta
+          name="og:url"
+          key="og:url"
+          content="https://streams.ericadamski.dev"
+        />
+        <meta
+          name="description"
+          key="description"
+          content="See all of Eric's past, present, and future streams! Interact with live streams and vote on content you want to see!"
+        />
+        <meta
+          name="og:description"
+          key="og:description"
+          content="See all of Eric's past, present, and future streams! Interact with live streams and vote on content you want to see!"
+        />
+        <meta
+          name="og:image"
+          key="og:image"
+          content="https://streams.ericadamski.dev/images/social.png"
+        />
       </Head>
       <PointContext.Provider value={{ instance: pointSystemInstance }}>
         <Component {...pageProps} />
