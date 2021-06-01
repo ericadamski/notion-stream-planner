@@ -72,7 +72,7 @@ export default function MyApp({ pageProps, Component }: AppProps) {
             content="summary_large_image"
           />
           <meta name="og:title" key="og:title" content="Eric's live streams" />
-          <link key="favicon" rel="shortcut icon" href="/favicon.png" />
+          <link key="favicon" rel="shortcut icon" href="/images/favicon.png" />
           <meta
             name="og:url"
             key="og:url"
@@ -86,12 +86,12 @@ export default function MyApp({ pageProps, Component }: AppProps) {
           <meta
             name="og:description"
             key="og:description"
-            content="Add simple Q&A threads and reactions to any event."
+            content="See all of Eric's past, present, and future streams! Interact with live streams and vote on content you want to see!"
           />
           <meta
             name="og:image"
             key="og:image"
-            content="https://streams.ericadamski.dev/social.png"
+            content="https://streams.ericadamski.dev/images/social.png"
           />
         </Head>
       </Head>
