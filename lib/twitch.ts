@@ -10,6 +10,15 @@ const REDIRECT_URI = encodeURIComponent(
     : "http://localhost:3000/auth/callback/twitch"
 );
 
+export interface TwitchUser {
+  displayName: string;
+  imageUrl: string;
+  id: string;
+  login: string;
+}
+
+export type AnonymousTwitchUser = Pick<TwitchUser, "id">;
+
 export function getOAuthUrl(state?: string) {
   const scopes = ["user:read:email"];
 

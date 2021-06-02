@@ -12,15 +12,15 @@ export function Tada(props: React.SVGProps<SVGSVGElement>) {
     >
       <path
         d="M29.231 37.428c-1.536.746-3.323 1.629-5.218 2.5a74.385 74.385 0 01-3.5 1.536c-.8.345-1.614.653-2.411.933-.754.266-1.471.538-2.16.811-1.192.459-2.3.919-3.387 1.335-1.238.49-2.508.898-3.8 1.22a3.056 3.056 0 01-3.438-3.452c.295-1.2.668-2.5 1.1-3.883l.008-.007c.351-1.184.753-2.4 1.169-3.61.33-.976.682-1.944 1.027-2.892.222-.595.437-1.184.667-1.758.488-1.263.99-2.469 1.493-3.631a95.446 95.446 0 012.368-5.01c5.363 5.3 10.723 10.603 16.082 15.908z"
-        fill="url(#prefix__paint0_radial)"
+        fill="url(#tada__paint0_radial)"
       />
       <path
         d="M29.177 37.116c1.49-1.49-.806-6.201-5.128-10.523s-9.033-6.618-10.523-5.128c-1.489 1.489.807 6.2 5.13 10.522 4.321 4.322 9.032 6.618 10.521 5.129z"
-        fill="url(#prefix__paint1_radial)"
+        fill="url(#tada__paint1_radial)"
       />
       <path
         d="M27.879 37.812c-2.211 0-5.895-2.142-9.4-5.648-4.487-4.487-6.74-9.264-5.128-10.875.8-.8 2.393-.683 4.485.336a25.199 25.199 0 016.391 4.792c4.486 4.487 6.739 9.264 5.128 10.875a2.009 2.009 0 01-1.476.52zm-13.046-16.55a1.545 1.545 0 00-1.13.38c-1.217 1.217.554 5.593 5.128 10.169 4.574 4.576 8.952 6.346 10.169 5.128 1.217-1.218-.554-5.594-5.128-10.169a24.71 24.71 0 00-6.256-4.695 6.79 6.79 0 00-2.783-.813z"
-        fill="url(#prefix__paint2_linear)"
+        fill="url(#tada__paint2_linear)"
       />
       <path
         d="M39.997 19.997l.142 2.508 2.147 1.304-2.341.911-.577 2.444-1.59-1.945-2.503.206 1.359-2.112-.97-2.317 2.429.639 1.904-1.638z"
@@ -660,63 +660,63 @@ export function Tada(props: React.SVGProps<SVGSVGElement>) {
       />
       <path
         d="M36.559 15.084c.905-3.771-9.936-7.13-10.184-11.016l.1-2.751C27.6 4.4 38.462 9.275 37.057 13.006l-.498 2.078z"
-        fill="url(#prefix__paint3_linear)"
+        fill="url(#tada__paint3_linear)"
       />
       <path
         d="M27.541 15.726c.905-3.771 8.366 2.075 9.07-.858l.5-2.078c-.7 2.933-8.164-2.912-9.07.859l-.5 2.077z"
-        fill="url(#prefix__paint4_linear)"
+        fill="url(#tada__paint4_linear)"
       />
       <path
         d="M30.347 24.1c.651-3.04-3.715-4.922-2.754-8.6l.5-2.077c-.7 2.933 3.658 4.824 2.753 8.595l-.499 2.082z"
-        fill="url(#prefix__paint5_linear)"
+        fill="url(#tada__paint5_linear)"
       />
       <path
         d="M20.849 31.462c.905-3.771 8.794-4.426 9.5-7.359l.5-2.078c-.71 2.547-9.6 1.742-10.507 5.714l.507 3.723z"
-        fill="url(#prefix__paint6_linear)"
+        fill="url(#tada__paint6_linear)"
       />
       <path
         d="M24.319 33.014c-1.101.12-2.182.38-3.218.773l.009.007c.389.291.635.481.754.572.163.124.4.3.71.506a15.11 15.11 0 013.3-.055c.587.059 1.17.148 1.748.266a15.61 15.61 0 019.208 6c.177-.79.354-1.571.53-2.351a15.524 15.524 0 00-13.041-5.718z"
-        fill="url(#prefix__paint7_linear)"
+        fill="url(#tada__paint7_linear)"
       />
       <path
         d="M12.793 15.973c-.856-3.126 6.874-4.878 6.219-7.269L17.92 5.651c.655 2.39-6.756 5.216-5.9 8.342l.773 1.98z"
-        fill="url(#prefix__paint8_linear)"
+        fill="url(#tada__paint8_linear)"
       />
       <path
         d="M20.356 20.073c-.856-3.126-7.394-2.132-8.049-4.522l-.379-2.088c.654 2.391 7.193 1.4 8.049 4.523l.379 2.087z"
-        fill="url(#prefix__paint9_linear)"
+        fill="url(#tada__paint9_linear)"
       />
       <path
         d="M16.816 27.151c-.919-3.109 4.363-5.471 3.66-7.848l-.754-1.981c.7 2.377-4.58 4.74-3.661 7.848l.755 1.981z"
-        fill="url(#prefix__paint10_linear)"
+        fill="url(#tada__paint10_linear)"
       />
       <path
         d="M26 25.5a3.1 3.1 0 01-1.78-.724 3.07 3.07 0 01-.866-1.237l1.112-1.88c.24.576.656 1.06 1.188 1.386.3.178.632.3.977.358L26 25.5z"
-        fill="url(#prefix__paint11_linear)"
+        fill="url(#tada__paint11_linear)"
       />
       <path
         d="M23.742 18.331a2.627 2.627 0 01-2.177.841v-1.681A3.324 3.324 0 0023.42 17l.322 1.331z"
-        fill="url(#prefix__paint12_linear)"
+        fill="url(#tada__paint12_linear)"
       />
       <path
         d="M39.839 6.331c-.408.443-.92.777-1.491.972-.254.085-.517.14-.784.165V5.522a4.44 4.44 0 001.88-.946l.395 1.755z"
-        fill="url(#prefix__paint13_linear)"
+        fill="url(#tada__paint13_linear)"
       />
       <path
         d="M8.005 7.231a2.626 2.626 0 001.7 1.594l.628-1.56a3.312 3.312 0 01-.621-.3 3.386 3.386 0 01-.912-.853l-.795 1.119z"
-        fill="url(#prefix__paint14_linear)"
+        fill="url(#tada__paint14_linear)"
       />
       <path
         d="M35.254 30.023a3.63 3.63 0 01-1.491.977c-.254.085-.517.14-.784.165v-1.951a4.4 4.4 0 001.879-.946l.396 1.755z"
-        fill="url(#prefix__paint15_linear)"
+        fill="url(#tada__paint15_linear)"
       />
       <path
         d="M42.277 17.741a4.568 4.568 0 01-2.177-1.178l.618-1.755a2.922 2.922 0 001.888 1.418l-.329 1.515z"
-        fill="url(#prefix__paint16_linear)"
+        fill="url(#tada__paint16_linear)"
       />
       <defs>
         <linearGradient
-          id="prefix__paint2_linear"
+          id="tada__paint2_linear"
           x1={11.814}
           y1={31.711}
           x2={27.589}
@@ -727,7 +727,7 @@ export function Tada(props: React.SVGProps<SVGSVGElement>) {
           <stop offset={1} stopColor="#FC6115" />
         </linearGradient>
         <linearGradient
-          id="prefix__paint3_linear"
+          id="tada__paint3_linear"
           x1={37.842}
           y1={9.539}
           x2={25.349}
@@ -741,7 +741,7 @@ export function Tada(props: React.SVGProps<SVGSVGElement>) {
           <stop offset={1} stopColor="#760000" />
         </linearGradient>
         <linearGradient
-          id="prefix__paint4_linear"
+          id="tada__paint4_linear"
           x1={1232.26}
           y1={226.558}
           x2={1309.97}
@@ -755,7 +755,7 @@ export function Tada(props: React.SVGProps<SVGSVGElement>) {
           <stop offset={1} stopColor="#760000" />
         </linearGradient>
         <linearGradient
-          id="prefix__paint5_linear"
+          id="tada__paint5_linear"
           x1={49.49}
           y1={-316.027}
           x2={65.379}
@@ -769,7 +769,7 @@ export function Tada(props: React.SVGProps<SVGSVGElement>) {
           <stop offset={1} stopColor="#760000" />
         </linearGradient>
         <linearGradient
-          id="prefix__paint6_linear"
+          id="tada__paint6_linear"
           x1={21.335}
           y1={27.521}
           x2={29.908}
@@ -782,7 +782,7 @@ export function Tada(props: React.SVGProps<SVGSVGElement>) {
           <stop offset={1} stopColor="#760000" />
         </linearGradient>
         <linearGradient
-          id="prefix__paint7_linear"
+          id="tada__paint7_linear"
           x1={39.373}
           y1={46.776}
           x2={24.476}
@@ -797,7 +797,7 @@ export function Tada(props: React.SVGProps<SVGSVGElement>) {
           <stop offset={0.927} stopColor="#33530C" />
         </linearGradient>
         <linearGradient
-          id="prefix__paint8_linear"
+          id="tada__paint8_linear"
           x1={663.704}
           y1={177.277}
           x2={744.435}
@@ -812,7 +812,7 @@ export function Tada(props: React.SVGProps<SVGSVGElement>) {
           <stop offset={0.927} stopColor="#33530C" />
         </linearGradient>
         <linearGradient
-          id="prefix__paint9_linear"
+          id="tada__paint9_linear"
           x1={729.696}
           y1={48.047}
           x2={835.568}
@@ -827,7 +827,7 @@ export function Tada(props: React.SVGProps<SVGSVGElement>) {
           <stop offset={0.927} stopColor="#33530C" />
         </linearGradient>
         <linearGradient
-          id="prefix__paint10_linear"
+          id="tada__paint10_linear"
           x1={477.78}
           y1={357.216}
           x2={525.803}
@@ -842,7 +842,7 @@ export function Tada(props: React.SVGProps<SVGSVGElement>) {
           <stop offset={0.927} stopColor="#33530C" />
         </linearGradient>
         <linearGradient
-          id="prefix__paint11_linear"
+          id="tada__paint11_linear"
           x1={95.654}
           y1={106.849}
           x2={112.958}
@@ -857,7 +857,7 @@ export function Tada(props: React.SVGProps<SVGSVGElement>) {
           <stop offset={0.927} stopColor="#33530C" />
         </linearGradient>
         <linearGradient
-          id="prefix__paint12_linear"
+          id="tada__paint12_linear"
           x1={65.963}
           y1={57.135}
           x2={74.36}
@@ -872,7 +872,7 @@ export function Tada(props: React.SVGProps<SVGSVGElement>) {
           <stop offset={0.927} stopColor="#33530C" />
         </linearGradient>
         <linearGradient
-          id="prefix__paint13_linear"
+          id="tada__paint13_linear"
           x1={121.041}
           y1={23.331}
           x2={128.553}
@@ -887,7 +887,7 @@ export function Tada(props: React.SVGProps<SVGSVGElement>) {
           <stop offset={0.927} stopColor="#33530C" />
         </linearGradient>
         <linearGradient
-          id="prefix__paint14_linear"
+          id="tada__paint14_linear"
           x1={-209.096}
           y1={-7.955}
           x2={-217.088}
@@ -902,7 +902,7 @@ export function Tada(props: React.SVGProps<SVGSVGElement>) {
           <stop offset={0.927} stopColor="#33530C" />
         </linearGradient>
         <linearGradient
-          id="prefix__paint15_linear"
+          id="tada__paint15_linear"
           x1={106.025}
           y1={115.691}
           x2={113.536}
@@ -917,7 +917,7 @@ export function Tada(props: React.SVGProps<SVGSVGElement>) {
           <stop offset={0.927} stopColor="#33530C" />
         </linearGradient>
         <linearGradient
-          id="prefix__paint16_linear"
+          id="tada__paint16_linear"
           x1={138.533}
           y1={60.076}
           x2={147.96}
@@ -932,7 +932,7 @@ export function Tada(props: React.SVGProps<SVGSVGElement>) {
           <stop offset={0.927} stopColor="#33530C" />
         </linearGradient>
         <radialGradient
-          id="prefix__paint0_radial"
+          id="tada__paint0_radial"
           cx={0}
           cy={0}
           r={1}
@@ -953,7 +953,7 @@ export function Tada(props: React.SVGProps<SVGSVGElement>) {
           <stop offset={0.93} stopColor="#6D3913" />
         </radialGradient>
         <radialGradient
-          id="prefix__paint1_radial"
+          id="tada__paint1_radial"
           cx={0}
           cy={0}
           r={1}

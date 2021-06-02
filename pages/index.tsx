@@ -14,6 +14,13 @@ import { PointBar } from "components/PointBar";
 import { PointContext } from "context/Points";
 import { PointSystem } from "lib/points";
 import { Button } from "components/Button";
+import { CryingFaceEmoji } from "vectors/CryingFaceEmoji";
+import { Stickerify } from "components/Stickerify";
+import { SillyFaceEmoji } from "vectors/SillyFaceEmoji";
+import { HeartEyesEmoji } from "vectors/HeartEyesEmoji";
+import { LOLEmoji } from "vectors/LOLEmoji";
+import { CowboyEmoji } from "vectors/CowbodyEmoji";
+import { AngryFaceEmoji } from "vectors/AngryFaceEmoji";
 
 const Reactions = dynamic(
   async () => (await import("../components/Reactions")).Reactions,
@@ -121,6 +128,7 @@ export default function Home({ pages }: Props) {
       ({ isComplete, date }) => !isComplete && date.start != null
     );
   }, [sortedUpcoming]);
+
   const nextEventCalLink = useMemo(() => {
     if (nextStream != null) {
       const { start } = nextStream.date;
@@ -153,6 +161,12 @@ export default function Home({ pages }: Props) {
     <>
       <div style={{ padding: "2rem" }}>
         {/* <div className="header"> */}
+        {/* <Stickerify sticker={SillyFaceEmoji} size={4} />
+        <Stickerify sticker={CryingFaceEmoji} size={4} />
+        <Stickerify sticker={HeartEyesEmoji} size={4} />
+        <Stickerify sticker={LOLEmoji} size={4} />
+        <Stickerify sticker={CowboyEmoji} size={4} />
+        <Stickerify sticker={AngryFaceEmoji} size={4} /> */}
         <div className="watch-now">
           <PointBar />
           <div style={{ width: "1rem" }} />

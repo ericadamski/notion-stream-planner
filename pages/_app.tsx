@@ -5,6 +5,7 @@ import { GlobalStyles } from "components/GlobalStyles";
 import { PointContext } from "context/Points";
 import { PointSystem } from "lib/points";
 import { useEffect, useState } from "react";
+import { MousePad } from "components/MousePad";
 
 export default function MyApp({ pageProps, Component }: AppProps) {
   const [pointSystemInstance, setPointSystemInstance] = useState<PointSystem>(
@@ -94,6 +95,7 @@ export default function MyApp({ pageProps, Component }: AppProps) {
         />
       </Head>
       <PointContext.Provider value={{ instance: pointSystemInstance }}>
+        <MousePad />
         <Component {...pageProps} />
       </PointContext.Provider>
       <GlobalStyles />
