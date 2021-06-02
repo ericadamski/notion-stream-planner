@@ -138,7 +138,7 @@ export default function Home({ pages }: Props) {
         duration: { hours: 1 },
         title: "Eric's streaming!",
         description: `Come watch me hack, build, chat or play some games. Check out what we will be doing in this stream here: https://streams.ericadamski.dev/stream/${nextStream.id}`,
-        url: "https://twitch.tv/ericadamski",
+        url: "https://twitch.tv/wikkidoo",
         status: "CONFIRMED",
         organizer: { name: "Eric", email: "er.adamski@gmail.com" },
       });
@@ -157,7 +157,7 @@ export default function Home({ pages }: Props) {
           <PointBar />
           <div style={{ width: "1rem" }} />
           <a
-            href="https://twitch.tv/ericadamski"
+            href="https://twitch.tv/wikkidoo"
             onClick={() => instance?.addPoints(PointSystem.WATCH_LIVE)}
           >
             {live.length >= 1 ? "Watch now" : "Follow for updates"}
