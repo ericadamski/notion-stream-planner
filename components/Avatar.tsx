@@ -56,10 +56,11 @@ export const Avatar = memo(function Avatar(props: Props) {
     const remotePosition = myCursor?.position ?? { x: 0, y: 0 };
     const remoteDimensions = myCursor?.dimensions ?? { w: 0 };
     const wScale = (hostDimensions.width ?? 0) / remoteDimensions.w;
+    const hScale = (hostDimensions.height ?? 0) / remoteDimensions.h;
 
     return {
       x: remotePosition.x * wScale,
-      y: remotePosition.y,
+      y: remotePosition.y * hScale,
     };
   }, [props.position, myCursor, hostDimensions]);
 

@@ -283,7 +283,7 @@ export default function Home({ pages }: Props) {
               />
             </>
           )}
-          {live.length > 0 && streamInfo != null && <Reactions />}
+          {live.length > 0 && <Reactions />}
         </div>
         <div style={{ height: "2rem" }} />
         <div className="streams-container">
