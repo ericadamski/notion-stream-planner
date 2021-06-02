@@ -14,13 +14,6 @@ import { PointBar } from "components/PointBar";
 import { PointContext } from "context/Points";
 import { PointSystem } from "lib/points";
 import { Button } from "components/Button";
-import { CryingFaceEmoji } from "vectors/CryingFaceEmoji";
-import { Stickerify } from "components/Stickerify";
-import { SillyFaceEmoji } from "vectors/SillyFaceEmoji";
-import { HeartEyesEmoji } from "vectors/HeartEyesEmoji";
-import { LOLEmoji } from "vectors/LOLEmoji";
-import { CowboyEmoji } from "vectors/CowbodyEmoji";
-import { AngryFaceEmoji } from "vectors/AngryFaceEmoji";
 
 const Reactions = dynamic(
   async () => (await import("../components/Reactions")).Reactions,

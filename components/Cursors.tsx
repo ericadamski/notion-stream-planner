@@ -19,6 +19,7 @@ import { useUser } from "hooks/useUser";
 import { ToastContext } from "context/Toast";
 import { getUserImageFromId } from "utils/getUserImageFromId";
 import type { AnonymousTwitchUser, TwitchUser } from "lib/twitch";
+import { Pong } from "./Pong";
 
 interface Props {
   channelId: string;
@@ -211,11 +212,7 @@ export function Cursors(props: Props) {
 
           console.log("esc", keyPressed);
 
-          if (canStartGameWith != null) {
-            return keyPressed === "q";
-          }
-
-          return false;
+          return keyPressed === "q";
         })
       )
       .subscribe((event) => {
@@ -294,7 +291,7 @@ export function Cursors(props: Props) {
               isClicking,
               user: cursorUser,
               lastChange,
-            } = cursors[userId];
+            } = cursors[userId] ?? {};
 
             if (lastChange == null || Date.now() - lastChange > ms("30s")) {
               handleRemoveCursor(userId as string);

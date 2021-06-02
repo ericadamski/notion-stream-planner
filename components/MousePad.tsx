@@ -6,6 +6,7 @@ import { RoomServiceProvider } from "@roomservice/react";
 import { AnonymousTwitchUser } from "lib/twitch";
 import { useUser } from "hooks/useUser";
 import { Cursors } from "./Cursors";
+import { Pong } from "./Pong";
 
 async function authRoomService(params: {
   room: string;
@@ -60,6 +61,7 @@ export function MousePad() {
         ctx: { user },
       }}
     >
+      <Pong channelId={channelId} />
       <Overlay>
         <Cursors channelId={channelId} />
       </Overlay>
