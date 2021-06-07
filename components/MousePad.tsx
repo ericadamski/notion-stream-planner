@@ -1,5 +1,5 @@
 import { until } from "@open-draft/until";
-import React from "react";
+import React, { ReactNode, useState } from "react";
 import styled from "styled-components";
 import { RoomServiceProvider } from "@roomservice/react";
 
@@ -7,6 +7,8 @@ import { AnonymousTwitchUser } from "lib/twitch";
 import { useUser } from "hooks/useUser";
 import { Cursors } from "./Cursors";
 import { Pong } from "./Pong";
+import { ToastContext } from "context/Toast";
+import { Toast } from "./Toast";
 
 async function authRoomService(params: {
   room: string;
@@ -52,6 +54,7 @@ const channelId = "460284418";
 
 export function MousePad() {
   const user = useUser();
+  const [toastContent, setToastContent] = useState<ReactNode>(null);
 
   return (
     <RoomServiceProvider
@@ -61,8 +64,13 @@ export function MousePad() {
         ctx: { user },
       }}
     >
-      <Pong channelId={channelId} />
+      <ToastContext.Provider
+        value={{ content: toastContent, showToast: setToastContent }}
+      >
+        <Toast />
+      </ToastContext.Provider>
       <Overlay>
+        {/* <Pong channelId={channelId} /> */}
         <Cursors channelId={channelId} />
       </Overlay>
     </RoomServiceProvider>
@@ -74,4 +82,6 @@ const Overlay = styled.div`
   background: transparent;
   width: 100vw;
   height: 100vh;
+  z-index: 1000;
+  pointer-events: none;
 `;

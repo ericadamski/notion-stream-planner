@@ -4,6 +4,7 @@ import React, {
   useCallback,
   useEffect,
   useContext,
+  useMemo,
 } from "react";
 import { MapClient, useMap } from "@roomservice/react";
 import styled from "styled-components";
@@ -18,8 +19,10 @@ import { useWindowSize } from "hooks/useWindowSize";
 import { useUser } from "hooks/useUser";
 import { ToastContext } from "context/Toast";
 import { getUserImageFromId } from "utils/getUserImageFromId";
-import type { AnonymousTwitchUser, TwitchUser } from "lib/twitch";
-import { Pong } from "./Pong";
+import type { TwitchUser } from "lib/twitch";
+import { GameState, Game } from "components/Pong";
+import { RemoteAvatar } from "./RemoteAvatar";
+import { RemoteCursors } from "./RemoteCursors";
 
 interface Props {
   channelId: string;
@@ -29,20 +32,6 @@ interface Props {
  * <userId>:<userId>
  */
 type GameId = string;
-
-enum GameState {
-  Invited = "invited",
-  Playing = "playing",
-}
-
-interface Game {
-  invitedAt: number;
-  state: GameState;
-  // position of the ball,
-  // position of the paddles
-  player1: TwitchUser | AnonymousTwitchUser;
-  player2: TwitchUser | AnonymousTwitchUser;
-}
 
 export function Cursors(props: Props) {
   const { showToast } = useContext(ToastContext);
@@ -58,11 +47,11 @@ export function Cursors(props: Props) {
   const [canStartGameWith, setCanStartGameWith] = useState<string>();
   const [hasPendingGameInvite, setPendingGameInvite] = useState<GameId>();
   const [mousePosition, hideMouse] = useUserCursor();
-  const [cursors, cursorMap] = useMap<{ [userId: string]: UserCursor }>(
+  const [_cursors, cursorMap] = useMap<{ [userId: string]: UserCursor }>(
     props.channelId,
     "cursors"
   );
-  const [games, gameMap] = useMap<{ [gameId: string]: Game }>(
+  const [_games, gameMap] = useMap<{ [gameId: string]: Game }>(
     props.channelId,
     "games"
   );
@@ -99,10 +88,6 @@ export function Cursors(props: Props) {
       }
     }
   }, [user, gameMap, showToast]);
-
-  // display accept/reject invite.
-  // start/reject
-  // if there is a pong game active render that rather than your cursor.
 
   const handleRemoveCursor = useCallback(
     (id: string) => {
@@ -210,14 +195,13 @@ export function Cursors(props: Props) {
         filter((event) => {
           const keyPressed = event.key.toLowerCase();
 
-          console.log("esc", keyPressed);
+          // console.log("esc", keyPressed);
+          // TODO: escape should dismiss any invites
 
           return keyPressed === "q";
         })
       )
       .subscribe((event) => {
-        // TODO: reject invite?
-
         if (hasPendingGameInvite != null && gameMap != null) {
           gameMap.set(hasPendingGameInvite, {
             ...gameMap.get(hasPendingGameInvite)!,
@@ -237,6 +221,14 @@ export function Cursors(props: Props) {
         ) {
           gameMap.set(`${user.id}:${canStartGameWith}`, {
             invitedAt: Date.now(),
+            ball: {
+              x: 0,
+              y: 0,
+              direction: {
+                x: 1,
+                y: 1,
+              },
+            },
             player1: user,
             player2: cursorMap.get(canStartGameWith)!.user,
             state: GameState.Invited,
@@ -268,6 +260,11 @@ export function Cursors(props: Props) {
     }
   }, [cursorMap, canStartGameWith]);
 
+  const image = useMemo(
+    () => (user != null ? getUserImageFromId(user.id) : ""),
+    [user]
+  );
+
   return (
     <MousePad onMouseDown={handleClick}>
       {user && (
@@ -275,40 +272,16 @@ export function Cursors(props: Props) {
           {/* My cursor avatar */}
           {!hideMouse && (
             <Avatar
-              channelId={props.channelId}
-              user={user}
+              key={user.id}
+              id={user.id}
+              image={image}
               isClicking={Boolean(clicking)}
               position={mousePosition}
               onClickAnimationFinish={onClickAnimationFinish}
             />
           )}
           {/* render the cursors */}
-          {cursorMap?.keys.map((userId) => {
-            // Don't render my own.
-            if (userId === user.id) return null;
-
-            const {
-              isClicking,
-              user: cursorUser,
-              lastChange,
-            } = cursors[userId] ?? {};
-
-            if (lastChange == null || Date.now() - lastChange > ms("30s")) {
-              handleRemoveCursor(userId as string);
-
-              return null;
-            }
-
-            return (
-              <Avatar
-                key={userId}
-                channelId={props.channelId}
-                showCursor
-                isClicking={isClicking}
-                user={cursorUser}
-              />
-            );
-          })}
+          <RemoteCursors channelId={props.channelId} />
         </AnimatePresence>
       )}
     </MousePad>

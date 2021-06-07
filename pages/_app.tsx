@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import { AppProps } from "next/dist/next-server/lib/router/router";
 import Head from "next/head";
 
@@ -6,12 +6,9 @@ import { GlobalStyles } from "components/GlobalStyles";
 import { PointContext } from "context/Points";
 import { PointSystem } from "lib/points";
 import { MousePad } from "components/MousePad";
-import { ToastContext } from "context/Toast";
-import { Toast } from "components/Toast";
 
 export default function MyApp({ pageProps, Component }: AppProps) {
   const [pointSystemInstance] = useState<PointSystem>(new PointSystem());
-  const [toastContent, setToastContent] = useState<ReactNode>(null);
 
   return (
     <>
@@ -96,12 +93,7 @@ export default function MyApp({ pageProps, Component }: AppProps) {
         />
       </Head>
       <PointContext.Provider value={{ instance: pointSystemInstance }}>
-        <ToastContext.Provider
-          value={{ content: toastContent, showToast: setToastContent }}
-        >
-          <Toast />
-          <MousePad />
-        </ToastContext.Provider>
+        <MousePad />
         <Component {...pageProps} />
       </PointContext.Provider>
       <GlobalStyles />

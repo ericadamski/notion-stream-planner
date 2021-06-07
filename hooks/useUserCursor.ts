@@ -1,6 +1,13 @@
 import { RefObject, useEffect, useState } from "react";
 import { fromEvent } from "rxjs";
-import { delay, switchMap, takeUntil, tap, throttleTime } from "rxjs/operators";
+import {
+  debounceTime,
+  delay,
+  switchMap,
+  takeUntil,
+  tap,
+  throttleTime,
+} from "rxjs/operators";
 
 export interface Position {
   x: number;
@@ -10,7 +17,6 @@ export interface Position {
 export function useUserCursor(
   captureElement?: RefObject<HTMLElement>
 ): [mousePosition: Position, hideMouse: Boolean] {
-  // TODO: Should hide the mouse after x number of seconds inactive.
   const [hideMouse, setHideMouse] = useState<boolean>(true);
   const [mousePosition, setMousePosition] = useState<Position>({ x: 0, y: 0 });
 
@@ -24,6 +30,7 @@ export function useUserCursor(
       const mouseLeave$ = fromEvent(e, "mouseleave").pipe(
         delay(200),
         takeUntil(mouseEnter$),
+        debounceTime(500),
         tap(() => setHideMouse(true))
       );
 

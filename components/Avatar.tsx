@@ -7,8 +7,6 @@ import type { AnonymousTwitchUser, TwitchUser } from "lib/twitch";
 import { getCSSVarColorForString, getHexFromCSSVarColor } from "utils/colors";
 import { getSVGCursor } from "utils/cursor";
 import { hashString } from "utils/hashString";
-import { useMap } from "@roomservice/react";
-import { useWindowSize } from "hooks/useWindowSize";
 
 export interface UserCursor {
   user: TwitchUser | AnonymousTwitchUser;
@@ -22,77 +20,55 @@ export interface UserCursor {
 }
 
 interface Props {
-  channelId: string;
-  position?: Position;
-  user: TwitchUser | AnonymousTwitchUser;
+  id: string;
+  image: string;
+  position: Position;
+  animationSpeed?: number;
   onClickAnimationFinish?: () => void;
   isClicking?: boolean;
-  showCursor?: boolean;
 }
 
-export const Avatar = memo(function Avatar(props: Props) {
-  const hostDimensions = useWindowSize();
-  const [cursors] = useMap<{ [userId: string]: UserCursor }>(
-    props.channelId,
-    "cursors"
-  );
-  const color = useMemo(
-    () => getCSSVarColorForString(props.user.id),
-    [props.user]
-  );
-  const cursor = useMemo(
-    () => getSVGCursor(getHexFromCSSVarColor(color)),
-    [color]
-  );
-  const image = useMemo(
-    () =>
-      (props.user as TwitchUser).imageUrl ?? getRandomImageUrl(props.user.id),
-    [props.user]
-  );
-  const myCursor = cursors[props.user.id];
-  const position = useMemo(() => {
-    if (props.position) return props.position;
+export const Avatar = memo(
+  function Avatar(props: Props) {
+    const color = useMemo(() => getCSSVarColorForString(props.id), [props.id]);
+    const cursor = useMemo(
+      () => getSVGCursor(getHexFromCSSVarColor(color)),
+      [color]
+    );
 
-    const remotePosition = myCursor?.position ?? { x: 0, y: 0 };
-    const remoteDimensions = myCursor?.dimensions ?? { w: 0 };
-    const wScale = (hostDimensions.width ?? 0) / remoteDimensions.w;
-    const hScale = (hostDimensions.height ?? 0) / remoteDimensions.h;
-
-    return {
-      x: remotePosition.x * wScale,
-      y: remotePosition.y * hScale,
-    };
-  }, [props.position, myCursor, hostDimensions]);
-
-  return (
-    <Container
-      key={props.user.id}
-      animate={{
-        x: position.x + 16,
-        y: position.y + 16,
-      }}
-      style={{
-        borderColor: `var(${color})`,
-      }}
-      transition={{ duration: props.showCursor ? 0.2 : 0 }}
-    >
-      <Cursor cursor={cursor}>
-        {props.isClicking && (
-          <Ripple
-            style={{ backgroundColor: `var(${color})` }}
-            animate={{ scale: [0, 6], opacity: [1, 0] }}
-            transition={{ duration: 0.2 }}
-            onAnimationComplete={() => {
-              if (props.onClickAnimationFinish != null)
-                props.onClickAnimationFinish();
-            }}
-          />
-        )}
-      </Cursor>
-      <ImageContainer>{image && <Image src={image} />}</ImageContainer>
-    </Container>
-  );
-});
+    return (
+      <Container
+        layout="position"
+        key={props.id}
+        animate={{ ...props.position }}
+        style={{ borderColor: `var(${color})` }}
+        transition={{ duration: props.animationSpeed ?? 0 }}
+      >
+        <Cursor cursor={cursor}>
+          {props.isClicking && (
+            <Ripple
+              style={{ backgroundColor: `var(${color})` }}
+              animate={{ scale: [0, 6], opacity: [1, 0] }}
+              transition={{ duration: 0.2 }}
+              onAnimationComplete={() => {
+                if (props.onClickAnimationFinish != null)
+                  props.onClickAnimationFinish();
+              }}
+            />
+          )}
+        </Cursor>
+        <ImageContainer>
+          {props.image && <Image src={props.image} />}
+        </ImageContainer>
+      </Container>
+    );
+  },
+  (prev, next) => {
+    return (
+      prev.position.x === next.position.x && prev.position.y === next.position.y
+    );
+  }
+);
 
 const Container = styled(motion.div)`
   user-select: none;
@@ -136,9 +112,3 @@ const Ripple = styled(motion.div)`
 const Image = styled.img`
   max-width: 100%;
 `;
-
-function getRandomImageUrl(id: string) {
-  return `https://twext-rti.vercel.app/images/profile-${Math.abs(
-    hashString(id) % 14
-  )}.png`;
-}
