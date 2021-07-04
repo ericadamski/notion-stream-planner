@@ -104,7 +104,7 @@ export interface StreamInfo {
 export async function getStreamInfo(
   token: string
 ): Promise<StreamInfo | undefined> {
-  const userLogin = "ericadamski";
+  const userLogin = "wikkidoo";
   const [error, response] = await until(() =>
     fetch(`${TWITCH_API_URL}/streams?user_login=${userLogin}`, {
       headers: {

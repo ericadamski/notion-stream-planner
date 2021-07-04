@@ -36,6 +36,7 @@ export default function Home({ pages }: Props) {
     (route): Promise<StreamInfo> =>
       fetch(route).then((r) => (r.ok ? r.json() : {})) as Promise<StreamInfo>
   );
+
   const [votes, setVotes] = useState<Map<string, number>>(
     new Map<string, number>()
   );

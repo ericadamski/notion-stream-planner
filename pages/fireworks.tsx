@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import ReactCanvasConfetti from "react-canvas-confetti";
 import { CreateTypes } from "canvas-confetti";
 import { motion } from "framer-motion";
@@ -11,6 +11,12 @@ interface Reaction {
   id: string;
 }
 
+interface Gif {
+  id: string;
+  twitchUserLogin: string;
+  gifUrl: string;
+}
+
 const MAX_EMOJIS = 20;
 const MAX_EMOJI_RENDER = Array.from({ length: MAX_EMOJIS });
 
@@ -20,6 +26,7 @@ export default function FireworksPage() {
   const fireworkIntervalTimer = useRef<number | NodeJS.Timer>();
   const [isFiring, setIsFiring] = useState<boolean>(false);
   const [emojis, setEmojis] = useState<Reaction[]>([]);
+  const [gifs, setGifs] = useState<Map<string, Gif>>(new Map<string, Gif>());
   const windowSize = useWindowSize();
 
   useEffect(() => {
@@ -31,6 +38,36 @@ export default function FireworksPage() {
       fireworkTimer.current = setTimeout(() => setIsFiring(false), 5000);
 
       setIsFiring(true);
+    });
+
+    subscribe("gif", ({ id, data }) => {
+      try {
+        const { gif } = JSON.parse(data);
+
+        if (gif == null) {
+          return null;
+        }
+
+        setTimeout(() => {
+          setGifs((gifs) => {
+            const updatedGifs = new Map<string, Gif>(gifs);
+
+            updatedGifs.delete(id);
+
+            return updatedGifs;
+          });
+        }, 10000);
+
+        setGifs((gifs) => {
+          const updatedGifs = new Map<string, Gif>(gifs);
+
+          updatedGifs.set(id, { ...gif, id });
+
+          return updatedGifs;
+        });
+      } catch {
+        // Oops
+      }
     });
 
     subscribe("emoji", ({ id, data }) => {
@@ -89,6 +126,8 @@ export default function FireworksPage() {
     }
   }, [isFiring]);
 
+  const gifList = useMemo(() => Array.from(gifs.values()), [gifs]);
+
   return (
     <>
       <ReactCanvasConfetti
@@ -124,6 +163,30 @@ export default function FireworksPage() {
             </motion.div>
           );
         })}
+      </div>
+      <div
+        style={{
+          height: "100vh",
+          width: "100vw",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          zIndex: 10000,
+        }}
+      >
+        {gifList.map((gif) => (
+          <div
+            key={gif.id}
+            style={{
+              position: "absolute",
+              top: randomInRange(0, (windowSize.height ?? 0) - 500),
+              right: randomInRange(0, 250),
+            }}
+          >
+            <p>{gif.twitchUserLogin}</p>
+            <img src={gif.gifUrl} style={{ maxWidth: 300 }} />
+          </div>
+        ))}
       </div>
     </>
   );

@@ -70,7 +70,7 @@ export function MousePad() {
         <Toast />
       </ToastContext.Provider>
       <Overlay>
-        {/* <Pong channelId={channelId} /> */}
+        <Pong channelId={channelId} />
         <Cursors channelId={channelId} />
       </Overlay>
     </RoomServiceProvider>

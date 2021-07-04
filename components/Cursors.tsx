@@ -128,6 +128,7 @@ export function Cursors(props: Props) {
             data: {
               user,
               position: mousePosition,
+              scale: mousePosition.x ?? 0 / (windowDimensions.width ?? 1),
               dimensions: {
                 w: windowDimensions.width ?? 0,
                 h: windowDimensions.height ?? 0,
@@ -161,8 +162,8 @@ export function Cursors(props: Props) {
 
         if (position != null && userId !== data.user.id) {
           const remoteDimensions = dimensions ?? { h: 0, w: 0 };
-          const wScale = (data.dimensions.w ?? 0) / remoteDimensions.w;
-          const hScale = (data.dimensions.h ?? 0) / remoteDimensions.h;
+          const wScale = 1 - (data.dimensions.w ?? 0) / remoteDimensions.w;
+          const hScale = 1 - (data.dimensions.h ?? 0) / remoteDimensions.h;
 
           if (
             Math.abs(data.position.x - position.x * wScale) <= 50 &&

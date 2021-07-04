@@ -8,6 +8,7 @@ import { UserCursor } from "./Avatar";
 import type { AnonymousTwitchUser, TwitchUser } from "lib/twitch";
 import { useUser } from "hooks/useUser";
 import { useWindowSize } from "hooks/useWindowSize";
+import { useHotkeys } from "react-hotkeys-hook";
 
 interface Props {
   channelId: string;
@@ -48,6 +49,40 @@ export function Pong(props: Props) {
   const [games, gameMap] = useMap<{ [gameId: string]: Game }>(
     props.channelId,
     "games"
+  );
+  useHotkeys(
+    "r",
+    () => {
+      if (activeGameId != null && gameMap != null) {
+        const game = gameMap.get(activeGameId);
+
+        if (game != null) {
+          gameMap?.set(activeGameId, {
+            ...game,
+            ball: {
+              x: 200,
+              y: 200,
+              direction: {
+                x: 1,
+                y: 1,
+              },
+            },
+          });
+        }
+      }
+    },
+    {},
+    [gameMap, activeGameId]
+  );
+  useHotkeys(
+    "escape",
+    () => {
+      if (activeGameId != null && gameMap != null) {
+        gameMap.delete(activeGameId);
+      }
+    },
+    {},
+    [gameMap, activeGameId]
   );
 
   //   useEffect(() => {
@@ -243,8 +278,6 @@ const RightPaddle = styled(Paddle)`
 
 const Ball = styled(motion.div)`
   position: absolute;
-  top: 50%;
-  left: 50%;
   width: 2rem;
   height: 2rem;
   background: red;

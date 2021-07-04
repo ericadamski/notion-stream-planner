@@ -11,6 +11,7 @@ import { hashString } from "utils/hashString";
 export interface UserCursor {
   user: TwitchUser | AnonymousTwitchUser;
   position: Position;
+  scale: number;
   dimensions: {
     w: number;
     h: number;
