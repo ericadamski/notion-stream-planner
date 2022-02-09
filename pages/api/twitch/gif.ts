@@ -8,7 +8,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { u, url } = req.query;
 
-  publish("gif-pending", { userLogin: u, url });
+  await publish("gif-pending", { userLogin: u, url });
 
   res.end("LUL");
 };

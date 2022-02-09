@@ -6,7 +6,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(405).end();
   }
 
-  publish("messup", { text: req.query.t }, "messup-eric");
+  await publish("messup", { text: req.query.t }, "messup-eric");
 
   res.end("TableHere FlipThis FBtouchdown");
 };

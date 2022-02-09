@@ -6,7 +6,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(405).end();
   }
 
-  publish("hotdog", { tick: Date.now() }, "messup-eric");
+  await publish("hotdog", { tick: Date.now() }, "messup-eric");
 
   res.end();
 };
